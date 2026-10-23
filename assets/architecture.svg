@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="t d">
+  <title id="t">speakable architecture</title>
+  <desc id="d">Input text flows through ordered normalizer steps to spoken text, which feeds the CLI, the web demo and a TTS engine.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a5b4fc"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: system-ui, -apple-system, "Inter", "Segoe UI", sans-serif; fill: #e6e8f0; }
+    .sub { fill: #a9afc4; font-size: 15px; }
+    .label { font-size: 19px; font-weight: 600; }
+    .small { font-size: 16px; }
+    .line { stroke: #a5b4fc; stroke-width: 2.5; fill: none; }
+  </style>
+
+  <rect width="1200" height="620" fill="#151722"/>
+  <text x="600" y="48" text-anchor="middle" font-size="28" font-weight="700">speakable: written text to spoken words</text>
+
+  <!-- Input -->
+  <rect x="40" y="260" width="190" height="100" rx="14" fill="#262a3b" stroke="#3a3f55" stroke-width="2"/>
+  <text x="135" y="304" text-anchor="middle" class="label">Input text</text>
+  <text x="135" y="332" text-anchor="middle" class="sub">Rs. 5 on 5 Jan 2026</text>
+
+  <!-- Pipeline panel -->
+  <rect x="300" y="84" width="400" height="500" rx="16" fill="#1e2130" stroke="#6366f1" stroke-width="2"/>
+  <text x="500" y="116" text-anchor="middle" class="label" style="fill:#a5b4fc">Normalizer steps, in order</text>
+
+  <rect x="340" y="136" width="320" height="52" rx="10" fill="#262a3b" stroke="#3a3f55" stroke-width="2"/>
+  <text x="500" y="169" text-anchor="middle" class="small">1. Money</text>
+  <rect x="340" y="212" width="320" height="52" rx="10" fill="#262a3b" stroke="#3a3f55" stroke-width="2"/>
+  <text x="500" y="245" text-anchor="middle" class="small">2. Dates</text>
+  <rect x="340" y="288" width="320" height="52" rx="10" fill="#262a3b" stroke="#3a3f55" stroke-width="2"/>
+  <text x="500" y="321" text-anchor="middle" class="small">3. Times and years</text>
+  <rect x="340" y="364" width="320" height="52" rx="10" fill="#262a3b" stroke="#3a3f55" stroke-width="2"/>
+  <text x="500" y="397" text-anchor="middle" class="small">4. Ordinals and percents</text>
+  <rect x="340" y="440" width="320" height="52" rx="10" fill="#262a3b" stroke="#3a3f55" stroke-width="2"/>
+  <text x="500" y="473" text-anchor="middle" class="small">5. Abbreviations</text>
+  <rect x="340" y="516" width="320" height="52" rx="10" fill="#262a3b" stroke="#3a3f55" stroke-width="2"/>
+  <text x="500" y="549" text-anchor="middle" class="small">6. Plain numbers</text>
+
+  <path class="line" d="M500,188 L500,210" marker-end="url(#arrow)"/>
+  <path class="line" d="M500,264 L500,286" marker-end="url(#arrow)"/>
+  <path class="line" d="M500,340 L500,362" marker-end="url(#arrow)"/>
+  <path class="line" d="M500,416 L500,438" marker-end="url(#arrow)"/>
+  <path class="line" d="M500,492 L500,514" marker-end="url(#arrow)"/>
+
+  <!-- Input to pipeline, pipeline to spoken text -->
+  <path class="line" d="M230,310 L296,310" marker-end="url(#arrow)"/>
+  <path class="line" d="M700,310 L766,310" marker-end="url(#arrow)"/>
+
+  <!-- Spoken text -->
+  <rect x="770" y="260" width="190" height="100" rx="14" fill="#262a3b" stroke="#4ade80" stroke-width="2"/>
+  <text x="865" y="304" text-anchor="middle" class="label">Spoken text</text>
+  <text x="865" y="332" text-anchor="middle" class="sub">five rupees ...</text>
+
+  <!-- Outputs -->
+  <path class="line" d="M960,300 C985,300 985,180 1010,180" marker-end="url(#arrow)"/>
+  <path class="line" d="M960,310 L1010,310" marker-end="url(#arrow)"/>
+  <path class="line" d="M960,320 C985,320 985,440 1010,440" marker-end="url(#arrow)"/>
+
+  <rect x="1014" y="140" width="156" height="80" rx="12" fill="#1e2130" stroke="#3a3f55" stroke-width="2"/>
+  <text x="1092" y="188" text-anchor="middle" class="label">CLI</text>
+  <rect x="1014" y="260" width="156" height="100" rx="12" fill="#1e2130" stroke="#3a3f55" stroke-width="2"/>
+  <text x="1092" y="304" text-anchor="middle" class="label">Web demo</text>
+  <text x="1092" y="332" text-anchor="middle" class="sub">via Pyodide</text>
+  <rect x="1014" y="400" width="156" height="80" rx="12" fill="#1e2130" stroke="#3a3f55" stroke-width="2"/>
+  <text x="1092" y="448" text-anchor="middle" class="label">TTS engine</text>
+</svg>

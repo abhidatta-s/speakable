@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>speakable demo</title>
+<style>
+  body { margin: 0; padding: 32px 16px; background: #151722; color: #e6e8f0;
+         font-family: system-ui, -apple-system, "Inter", "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { margin: 0 0 4px; font-size: 28px; }
+  p.sub { margin: 0 0 24px; color: #a9afc4; }
+  .panel { background: #1e2130; border: 1px solid #3a3f55; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  label { display: block; margin-bottom: 8px; color: #a5b4fc; font-weight: 600; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 110px; padding: 10px; border-radius: 8px;
+             background: #262a3b; color: #e6e8f0; border: 1px solid #3a3f55; font: inherit; }
+  select { background: #262a3b; color: #e6e8f0; border: 1px solid #3a3f55; border-radius: 8px; padding: 8px; font: inherit; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  button { background: #6366f1; color: #ffffff; border: 0; border-radius: 8px; padding: 10px 18px;
+           font: inherit; font-weight: 600; cursor: pointer; }
+  button.secondary { background: #262a3b; color: #a5b4fc; border: 1px solid #3a3f55; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  #output { min-height: 48px; padding: 10px; background: #262a3b; border-radius: 8px; border: 1px solid #3a3f55; white-space: pre-wrap; }
+  #status { color: #a9afc4; font-size: 14px; }
+  #status.ok { color: #4ade80; }
+  #status.fail { color: #f87171; }
+</style>
+</head>
+<body>
+<main>
+  <h1>speakable</h1>
+  <p class="sub">Turns written text into words a text-to-speech voice should say. Runs the real Python code in your browser with Pyodide.</p>
+
+  <div class="panel">
+    <label for="input">Written text</label>
+    <textarea id="input">On 5 Jan 2026 at 9:30 am, Dr. Rao paid Rs. 1,250.50 for the 3rd ticket.</textarea>
+    <div class="row">
+      <button id="speakIt" disabled>Speak it</button>
+      <label for="system" style="margin: 0; color: #a9afc4; font-weight: 400;">Number system</label>
+      <select id="system">
+        <option value="international">international (million)</option>
+        <option value="indian">indian (lakh, crore)</option>
+      </select>
+      <span id="status">Loading Pyodide...</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label>Spoken form</label>
+    <div id="output"></div>
+    <div class="row">
+      <button id="hear" class="secondary" disabled>Hear it (browser voice)</button>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script>
+  // The Python files we copy into Pyodide's in-memory file system.
+  var PACKAGE_FILES = [
+    "__init__.py", "numbers.py", "money.py", "dates.py",
+    "times.py", "abbreviations.py", "normalizer.py"
+  ];
+
+  var pyodide = null;
+  var statusEl = document.getElementById("status");
+  var speakBtn = document.getElementById("speakIt");
+  var hearBtn = document.getElementById("hear");
+  var outputEl = document.getElementById("output");
+
+  function setStatus(message, cssClass) {
+    statusEl.textContent = message;
+    statusEl.className = cssClass || "";
+  }
+
+  async function start() {
+    try {
+      // Download the Python source files first (relative to this page:
+      // web/index.html -> ../speakable/x.py).
+      var sources = [];
+      for (var i = 0; i < PACKAGE_FILES.length; i++) {
+        var name = PACKAGE_FILES[i];
+        var response = await fetch("../speakable/" + name);
+        if (!response.ok) {
+          throw new Error("could not load " + name + " (serve from the repo root)");
+        }
+        sources.push(await response.text());
+      }
+
+      pyodide = await loadPyodide();
+      pyodide.FS.mkdir("speakable");
+      for (var j = 0; j < PACKAGE_FILES.length; j++) {
+        pyodide.FS.writeFile("speakable/" + PACKAGE_FILES[j], sources[j]);
+      }
+      pyodide.runPython("from speakable.normalizer import normalize");
+      setStatus("Ready", "ok");
+      speakBtn.disabled = false;
+    } catch (error) {
+      setStatus("Failed to start: " + error.message, "fail");
+    }
+  }
+
+  function speakIt() {
+    pyodide.globals.set("user_text", document.getElementById("input").value);
+    pyodide.globals.set("user_system", document.getElementById("system").value);
+    outputEl.textContent = pyodide.runPython("normalize(user_text, user_system)");
+    hearBtn.disabled = !("speechSynthesis" in window);
+  }
+
+  function hearIt() {
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(outputEl.textContent));
+  }
+
+  speakBtn.addEventListener("click", speakIt);
+  hearBtn.addEventListener("click", hearIt);
+  start();
+</script>
+</body>
+</html>
